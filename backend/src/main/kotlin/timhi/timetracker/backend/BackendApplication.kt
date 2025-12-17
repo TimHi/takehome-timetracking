@@ -23,7 +23,7 @@ fun dummyCallValidateWorkDay() {
         end = Instant.parse("2025-12-17T17:00:00Z")
     )
     val breakTime = TimeRange(
-        start = Instant.parse("2025-12-17T12:55:00Z"),
+        start = Instant.parse("2025-12-17T12:00:00Z"),
         end = Instant.parse("2025-12-17T13:00:00Z")
     )
 
