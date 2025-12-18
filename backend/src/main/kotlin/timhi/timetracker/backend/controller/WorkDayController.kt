@@ -8,6 +8,7 @@ import timhi.timetracker.backend.service.WorkDayService
 import timhi.timetracker.shared_sdk.model.WorkDay
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/workdays")
 class WorkDayController(
     private val service: WorkDayService
