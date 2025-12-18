@@ -1,45 +1,36 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { workdayService } from "../services/workdayService";
 import type { JsWorkDay } from "shared";
 
 export function useWorkDays(initialOffset: number = 0) {
-    const [weekWorkDays, setWeekWorkDays] = useState<JsWorkDay[]>([]);
     const [loading, setLoading] = useState(false);
     const [offset, setOffset] = useState(initialOffset);
 
-    // Fetch workdays for a specific week
-    const fetchWeek = useCallback(async (weekOffset: number = offset) => {
-        setLoading(true);
-        try {
-            const data = await workdayService.getWeek(weekOffset);
-            setWeekWorkDays(data);
-        } finally {
-            setLoading(false);
-        }
-    }, [offset]);
+    // --- Fetch week ---
+    const fetchWeek = useCallback(async (weekOffset: number): Promise<JsWorkDay[]> => {
+        console.log("Fetching week with offset:", weekOffset);
 
-    // Fetch current offset on mount / offset change
-    useEffect(() => {
-        fetchWeek(offset);
-    }, [offset, fetchWeek]);
+        const r: JsWorkDay[] = await workdayService.getWeek(weekOffset);
+        console.log(r);
+        return r;
 
-    // CRUD methods
-    const upsert = useCallback(async (workDay: JsWorkDay) => {
-        const updated = await workdayService.upsert(workDay);
-        await fetchWeek(offset); // refresh current week
-        return updated;
-    }, [offset, fetchWeek]);
+    }, []);
 
-    const remove = useCallback(async (id: number) => {
+
+    // --- CRUD methods ---
+    const upsert = useCallback(async (workDay: JsWorkDay): Promise<JsWorkDay> => {
+        return workdayService.upsert(workDay);
+    }, []);
+
+    const remove = useCallback(async (id: number): Promise<void> => {
         await workdayService.delete(id);
-        await fetchWeek(offset); // refresh current week
-    }, [offset, fetchWeek]);
-    //TODO_THL: evaluate useCallback necessity for this file
-    const getByDate = useCallback((date: string) => {
+    }, []);
+
+    const getByDate = useCallback((date: string): Promise<JsWorkDay | null> => {
         return workdayService.getByDate(date);
     }, []);
 
-    const getById = useCallback((id: number) => {
+    const getById = useCallback((id: number): Promise<JsWorkDay | null> => {
         return workdayService.getById(id);
     }, []);
 
@@ -52,16 +43,19 @@ export function useWorkDays(initialOffset: number = 0) {
         }
     }, []);
 
-    return {
-        listAll,
-        weekWorkDays,
-        loading,
-        offset,
-        setOffset,
-        fetchWeek,
-        upsert,
-        remove,
-        getByDate,
-        getById,
-    };
+    // --- Stable return object ---
+    return useMemo(
+        () => ({
+            listAll,
+            loading,
+            offset,
+            setOffset,
+            fetchWeek,
+            upsert,
+            remove,
+            getByDate,
+            getById,
+        }),
+        [listAll, loading, offset, setOffset, fetchWeek, upsert, remove, getByDate, getById]
+    );
 }
