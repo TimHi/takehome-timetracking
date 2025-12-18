@@ -5,5 +5,5 @@ import kotlin.js.JsExport
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-data class JsTimeRange(val startIso: String, val endIso: String)
+data class JsTimeRange(val start: String, val end: String)
 

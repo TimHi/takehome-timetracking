@@ -10,9 +10,9 @@ import timhi.timetracker.shared_sdk.validateWorkDay
 @JsExport
 fun validate(jsWorkDay: JsWorkDay) {
     val workDay = WorkDay(
-        date = LocalDate.parse(jsWorkDay.dateIso),
-        workTimes = jsWorkDay.workTimesArray.map { it.toDomain() },
-        breakTimes = jsWorkDay.breakTimesArray.map { it.toDomain() }
+        date = LocalDate.parse(jsWorkDay.date),
+        workTimes = jsWorkDay.workTimes.map { it.toDomain() },
+        breakTimes = jsWorkDay.breakTimes.map { it.toDomain() }
     )
     validateWorkDay(workDay)
 }

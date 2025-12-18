@@ -14,12 +14,12 @@ class ValidateJsWorkDayTest {
     @Test
     fun `validate valid JsWorkDay succeeds`() {
         val jsWorkDay = JsWorkDay(
-            dateIso = "2025-12-16",
-            workTimesArray = arrayOf(
+            date = "2025-12-16",
+            workTimes = arrayOf(
                 JsTimeRange("2025-12-16T08:00:00Z", "2025-12-16T12:00:00Z"),
                 JsTimeRange("2025-12-16T13:00:00Z", "2025-12-16T17:00:00Z")
             ),
-            breakTimesArray = arrayOf(
+            breakTimes = arrayOf(
                 JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z")
             )
         )
@@ -31,9 +31,9 @@ class ValidateJsWorkDayTest {
     @Test
     fun `validate JsWorkDay with empty workTimes throws exception`() {
         val jsWorkDay = JsWorkDay(
-            dateIso = "2025-12-16",
-            workTimesArray = arrayOf(),
-            breakTimesArray = arrayOf(
+            date = "2025-12-16",
+            workTimes = arrayOf(),
+            breakTimes = arrayOf(
                 JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z")
             )
         )
@@ -46,12 +46,12 @@ class ValidateJsWorkDayTest {
     @Test
     fun `validate JsWorkDay with overlapping workTimes throws exception`() {
         val jsWorkDay = JsWorkDay(
-            dateIso = "2025-12-16",
-            workTimesArray = arrayOf(
+            date = "2025-12-16",
+            workTimes = arrayOf(
                 JsTimeRange("2025-12-16T08:00:00Z", "2025-12-16T12:00:00Z"),
                 JsTimeRange("2025-12-16T11:00:00Z", "2025-12-16T17:00:00Z") // overlaps
             ),
-            breakTimesArray = arrayOf(
+            breakTimes = arrayOf(
                 JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z")
             )
         )

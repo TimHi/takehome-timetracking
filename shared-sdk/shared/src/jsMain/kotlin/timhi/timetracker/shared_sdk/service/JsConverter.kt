@@ -8,8 +8,9 @@ import timhi.timetracker.shared_sdk.model.JsWorkDay
 import timhi.timetracker.shared_sdk.model.TimeRange
 import timhi.timetracker.shared_sdk.model.WorkDay
 
-fun JsTimeRange.toDomain(): TimeRange = TimeRange(start = Instant.parse(startIso), end = Instant.parse(endIso))
+fun JsTimeRange.toDomain(): TimeRange = TimeRange(start = Instant.parse(start), end = Instant.parse(end))
 fun JsWorkDay.toDomain(): WorkDay = WorkDay(
-    date = LocalDate.parse(dateIso),
-    workTimes = workTimesArray.map { it.toDomain() },
-    breakTimes = breakTimesArray.map { it.toDomain() })
+    date = LocalDate.parse(date), // parse ISO string to LocalDate
+    workTimes = workTimes.map { it.toDomain() },
+    breakTimes = breakTimes.map { it.toDomain() }
+)
