@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 import Button from '@mui/material/Button';
 import { JsTimeRange, JsWorkDay, validate } from 'shared';
+import { useWorkDays } from './hooks/useWorkDays';
 
 function App() {
 	const [count, setCount] = useState(0);
-
+	const server = useWorkDays();
 	const wt = [
 		new JsTimeRange('2025-12-16T08:00:00Z', '2025-12-16T12:00:00Z'),
 		new JsTimeRange('2025-12-16T13:00:00Z', '2025-12-16T17:00:00Z'),
@@ -26,6 +27,13 @@ function App() {
 	} catch (e) {
 		console.error('Validation failed:', e);
 	}
+
+	useEffect(() => {
+		(async () => {
+			const data = await server.listAll();
+			console.log(data);
+		})();
+	}, []);
 
 	console.log('is Valid:', isValid);
 	return (
