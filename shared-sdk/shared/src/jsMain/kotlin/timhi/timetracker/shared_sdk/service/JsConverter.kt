@@ -12,6 +12,7 @@ import timhi.timetracker.shared_sdk.model.WorkDay
 fun JsTimeRange.toDomain(): TimeRange = TimeRange(start = Instant.parse(start), end = Instant.parse(end), type = TimeRangeType.valueOf(type)
 )
 fun JsWorkDay.toDomain(): WorkDay = WorkDay(
+    id = id.toLong(),
     date = LocalDate.parse(date), // parse ISO string to LocalDate
     timeRanges = timeRanges.map { it.toDomain() },
 )

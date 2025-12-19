@@ -6,6 +6,7 @@ import kotlin.js.JsExport
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 data class JsWorkDay(
+    val id: String,
     val date: String,
     val timeRanges: Array<JsTimeRange>
 )
