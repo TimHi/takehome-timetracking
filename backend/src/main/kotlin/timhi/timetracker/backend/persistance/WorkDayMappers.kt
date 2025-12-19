@@ -9,22 +9,22 @@ import kotlinx.datetime.toKotlinInstant
 
 fun WorkDayEntity.toDomain(): WorkDay = WorkDay(
     date = date.toKotlinLocalDate(),
-    workTimes = workTimes.map { it.toDomain() },
-    breakTimes = breakTimes.map { it.toDomain() }
+timeRanges = timeRanges.map { it.toDomain() }
 )
 
 fun WorkDay.toEntity(): WorkDayEntity = WorkDayEntity(
     date = date.toJavaLocalDate(),
-    workTimes = workTimes.map { it.toEmbeddable() },
-    breakTimes = breakTimes.map { it.toEmbeddable() }
+    timeRanges = timeRanges.map { it.toEmbeddable() }
 )
 
 fun TimeRangeEmbeddable.toDomain(): TimeRange = TimeRange(
     start = start.toKotlinInstant(),
-    end = end.toKotlinInstant()
+    end = end.toKotlinInstant(),
+    type = type
 )
 
 fun TimeRange.toEmbeddable(): TimeRangeEmbeddable = TimeRangeEmbeddable(
     start = start.toJavaInstant(),    // kotlinx.datetime.Instant -> java.time.Instant
-    end = end.toJavaInstant()
+    end = end.toJavaInstant(),
+    type = type
 )
