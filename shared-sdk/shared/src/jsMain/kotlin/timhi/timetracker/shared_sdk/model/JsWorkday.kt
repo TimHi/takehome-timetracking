@@ -7,6 +7,5 @@ import kotlin.js.JsExport
 @JsExport
 data class JsWorkDay(
     val date: String,
-    val workTimes: Array<JsTimeRange>,
-    val breakTimes: Array<JsTimeRange>
+    val timeRanges: Array<JsTimeRange>
 )
