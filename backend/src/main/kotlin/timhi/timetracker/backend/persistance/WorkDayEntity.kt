@@ -9,7 +9,7 @@ import java.time.LocalDate
 data class WorkDayEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val id: Long? = null,
 
     @Column(nullable = false)
     val date: LocalDate,
