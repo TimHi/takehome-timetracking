@@ -1,13 +1,21 @@
 package timhi.timetracker.backend.controller
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import timhi.timetracker.backend.dto.WeekLabelDto
 import timhi.timetracker.backend.dto.WorkDayDto
 import timhi.timetracker.backend.mappers.toDto
+import timhi.timetracker.backend.mappers.toWorkDay
 import timhi.timetracker.backend.service.WorkDayService
 import timhi.timetracker.shared_sdk.model.WorkDay
+import timhi.timetracker.shared_sdk.validateWorkDay
+import timhi.timetracker.shared_sdk.validation.WorkDayValidationException
+import timhi.timetracker.shared_sdk.weekLabel
 
 @RestController
 @CrossOrigin
@@ -54,4 +62,27 @@ class WorkDayController(
     fun delete(@PathVariable id: Long) {
         service.deleteById(id)
     }
+
+    @GetMapping("/week-label")
+    fun getWeekLabel(
+        @RequestParam(defaultValue = "0") offset: Long
+    ): String {
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+        return weekLabel(today, offset)
+    }
+
+    @PostMapping("/validate")
+    fun validate(@RequestBody workDay: WorkDayDto): ValidationResponse {
+        println("Validate ${workDay.date}")
+        return try {
+            validateWorkDay(workDay.toWorkDay())
+            ValidationResponse(valid = true)
+        } catch (e: WorkDayValidationException) {
+            ValidationResponse(valid = false, error = e.message)
+        }
+    }
 }
+data class ValidationResponse(
+    val valid: Boolean,
+    val error: String? = null
+)
