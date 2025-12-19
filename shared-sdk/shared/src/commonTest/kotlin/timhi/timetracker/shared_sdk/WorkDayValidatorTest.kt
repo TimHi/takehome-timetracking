@@ -38,9 +38,6 @@ class WorkDayValidatorTest {
             timeRanges = ranges.toList()
         )
 
-    private fun workRanges(day: WorkDay) = day.timeRanges.filter { it.type == TimeRangeType.WORK }
-    private fun breakRanges(day: WorkDay) = day.timeRanges.filter { it.type == TimeRangeType.BREAK }
-
     // -------------------
     // VALID CASES
     // -------------------

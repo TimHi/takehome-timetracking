@@ -1,8 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import WeekHeader from '../components/WeekHeader';
 import { useWeeklyWorkDays } from '../hooks/useWeeklyWorkDays';
-
-import WorkDayCard from '../components/WorkDayCard';
+import WeekDayCard from '../components/WeekDayCard';
 
 function WeeklyView() {
 	const { workDays, weekLabel, loading, prevWeek, nextWeek, jumpToToday } =
@@ -16,26 +15,16 @@ function WeeklyView() {
 				onNextWeek={nextWeek}
 				onToday={jumpToToday}
 			/>
-			{/* TODO_THL: refactor into single WorkDay Component, make clickable -> nav to detail view */}
+
 			{loading ? (
-				<Typography>Loading...</Typography>
+				<Typography>Lädt...</Typography>
 			) : workDays.length === 0 ? (
-				<Typography>No workdays for this week.</Typography>
+				<Typography>Keine Arbeitstage erfasst</Typography>
 			) : (
-				<Box
-					display='flex'
-					flexWrap='wrap'
-					justifyContent='space-between' // distribute evenly across the row
-					gap={2} // spacing between cards
-				>
+				<Box display='flex' flexWrap='wrap' gap={4}>
 					{workDays.map((day) => (
-						<Box
-							key={day.id}
-							flex='1 1 13%' // makes 7 cards fit nicely in one row
-							minWidth='200px' // ensures cards don't shrink too much on smaller screens
-							maxWidth='250px'
-						>
-							<WorkDayCard workDayId={day.id} />
+						<Box key={day.id}>
+							<WeekDayCard workDayId={day.id} />
 						</Box>
 					))}
 				</Box>

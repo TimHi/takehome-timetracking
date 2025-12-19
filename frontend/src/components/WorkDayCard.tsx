@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { useWorkDayDetail } from '../hooks/useWorkDayDetail';
-import { Card, CardContent, Typography, Box, Stack } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import FreeBreakfastIcon from '@mui/icons-material/FreeBreakfast';
-import { formatDate, formatTime } from '../util/timeFormat';
-import type { JsTimeRange } from 'shared';
+import { Card, CardContent, Typography, Stack, Tooltip } from '@mui/material';
 
+import { formatDate } from '../util/timeFormat';
+import type { JsTimeRange } from 'shared';
+import TimeRange from './TimeRange';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 interface WorkDayCardProps {
 	workDayId: string;
 }
@@ -21,42 +22,23 @@ function WorkDayCard({ workDayId }: WorkDayCardProps) {
 	if (!workDay) return <div>No data</div>;
 
 	return (
-		<Card sx={{ maxWidth: 500, margin: '20px auto', boxShadow: 3 }}>
+		<Card>
 			<CardContent>
 				<Typography variant='h6' gutterBottom>
 					{formatDate(workDay.date)}
 				</Typography>
 				<Stack spacing={1}>
-					{workDay.timeRanges.map((range: JsTimeRange, index: number) => {
-						const isBreak = range.type.toLowerCase() === 'break';
-						const bgColor = isBreak ? 'lightcoral' : 'lightgreen';
-						const Icon = isBreak ? FreeBreakfastIcon : AccessTimeIcon;
-
-						return (
-							<Box
-								key={index}
-								sx={{
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'space-between',
-									backgroundColor: bgColor,
-									padding: '8px 12px',
-									borderRadius: 2,
-									gap: 2,
-								}}
-							>
-								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-									<Icon />
-									<Typography>
-										{formatTime(range.start)} - {formatTime(range.end)}
-									</Typography>
-								</Box>
-								<Typography variant='body2' color='text.secondary'>
-									{range.type}
-								</Typography>
-							</Box>
-						);
-					})}
+					{workDay.timeRanges.map((range: JsTimeRange, index: number) => (
+						<TimeRange key={index} index={index} range={range} />
+					))}
+				</Stack>
+				<Stack mt={2} flex={1} flexDirection={'row'}>
+					<Tooltip title='Arbeitstag bearbeiten'>
+						<EditIcon />
+					</Tooltip>
+					<Tooltip title='Arbeitstag löschen'>
+						<DeleteIcon />
+					</Tooltip>
 				</Stack>
 			</CardContent>
 		</Card>

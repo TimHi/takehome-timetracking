@@ -7,28 +7,15 @@ export function useWorkDayDetail() {
 
     const [workDay, setWorkDay] = useState<JsWorkDay | null>(null);
 
-    const [loading, setLoading] = useState(false);
 
-    const fetchWeekDay = useCallback(async (id: number) => {
-        setLoading(true);
-        try {
-            const workDay = await server.getById(id);
-
-            if (workDay !== undefined && workDay !== null) {
-                console.log(workDay);
-                const r = await server.validateWorkDay(workDay);
-                console.log(r);
-            }
-            setWorkDay(workDay);
-        } finally {
-            setLoading(false);
-        }
-
+    const fetchWeekDay = useCallback(async (id: string) => {
+        const workDay = await server.getById(id);
+        setWorkDay(workDay);
     }, [server]);
 
     return {
         workDay,
-        loading,
         fetchWeekDay,
+
     };
 }

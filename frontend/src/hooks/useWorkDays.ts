@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { workdayService } from "../services/workdayService";
-import type { JsWorkDay } from "shared";
+import type { JsWorkDay, JsWorkDayDurations } from "shared";
 
 export function useWorkDays(initialOffset: number = 0) {
     const [loading, setLoading] = useState(false);
@@ -51,9 +51,14 @@ export function useWorkDays(initialOffset: number = 0) {
         return response.valid;
     }, []);
 
+    const getWorkDayDuration = useCallback((id: string): Promise<JsWorkDayDurations | null> => {
+        return workdayService.getDurations(id);
+    }, []);
+
     // --- Stable return object ---
     return useMemo(
         () => ({
+            getWorkDayDuration,
             validateWorkDay,
             listAll,
             loading,
@@ -66,6 +71,6 @@ export function useWorkDays(initialOffset: number = 0) {
             getById,
             getWeekLabel
         }),
-        [validateWorkDay, listAll, loading, offset, setOffset, fetchWeek, upsert, remove, getByDate, getById, getWeekLabel]
+        [getWorkDayDuration, validateWorkDay, listAll, loading, offset, setOffset, fetchWeek, upsert, remove, getByDate, getById, getWeekLabel]
     );
 }

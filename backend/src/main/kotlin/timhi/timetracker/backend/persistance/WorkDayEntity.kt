@@ -1,7 +1,6 @@
 package timhi.timetracker.backend.persistance
 
 import jakarta.persistence.*
-import timhi.timetracker.shared_sdk.model.TimeRangeType
 import java.time.LocalDate
 
 @Entity

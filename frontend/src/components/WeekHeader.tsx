@@ -1,7 +1,7 @@
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 type WeekHeaderProps = {
 	weekLabel: string;
 	onPrevWeek: () => void;
@@ -22,9 +22,13 @@ function WeekHeader({
 			justifyContent='space-between'
 			mb={2}
 		>
-			<IconButton onClick={onToday}>
+			<Button
+				variant='outlined'
+				onClick={onToday}
+				startIcon={<CalendarMonthIcon />}
+			>
 				<Typography>Aktuelle Woche</Typography>
-			</IconButton>
+			</Button>
 			<IconButton onClick={onPrevWeek}>
 				<ArrowBackIcon />
 			</IconButton>

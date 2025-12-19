@@ -17,16 +17,6 @@ export function useWeeklyWorkDays(initialOffset = 0) {
                 server.fetchWeek(offset),
                 server.getWeekLabel(offset),
             ]);
-
-            if (days !== undefined) {
-                console.log(days);
-                days.forEach(async (day) => {
-                    console.log('Fetched work day:', day);
-                    const r = await server.validateWorkDay(day);
-                    console.log(r);
-
-                });
-            }
             setWorkDays(days);
             setWeekLabel(label);
         } finally {

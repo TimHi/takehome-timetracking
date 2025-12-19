@@ -9,13 +9,19 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import timhi.timetracker.backend.dto.WeekLabelDto
 import timhi.timetracker.backend.dto.WorkDayDto
+import timhi.timetracker.backend.dto.WorkDayDurations
 import timhi.timetracker.backend.mappers.toDto
 import timhi.timetracker.backend.mappers.toWorkDay
 import timhi.timetracker.backend.service.WorkDayService
+import timhi.timetracker.shared_sdk.breakDuration
 import timhi.timetracker.shared_sdk.model.WorkDay
+import timhi.timetracker.shared_sdk.netWorkDuration
+import timhi.timetracker.shared_sdk.toHHmm
 import timhi.timetracker.shared_sdk.validateWorkDay
 import timhi.timetracker.shared_sdk.validation.WorkDayValidationException
 import timhi.timetracker.shared_sdk.weekLabel
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 @RestController
 @CrossOrigin
@@ -80,6 +86,20 @@ class WorkDayController(
         } catch (e: WorkDayValidationException) {
             ValidationResponse(valid = false, error = e.message)
         }
+    }
+
+    @GetMapping("/day-duration")
+    fun getWorkdayDurations(
+        @RequestParam id: Long
+    ): WorkDayDurations {
+        val workDay = service.getWorkDayById(id)?.toDto()
+        val workDuration =
+            workDay?.toWorkDay()?.netWorkDuration() ?: Duration.ZERO
+
+        val breakDuration =
+            workDay?.toWorkDay()?.breakDuration() ?: Duration.ZERO
+
+       return WorkDayDurations(workDuration.toHHmm(), breakDuration.toHHmm())
     }
 }
 data class ValidationResponse(

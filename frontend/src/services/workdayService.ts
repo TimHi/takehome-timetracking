@@ -1,4 +1,4 @@
-import type { JsWorkDay } from "shared";
+import type { JsWorkDay, JsWorkDayDurations } from "shared";
 
 const BASE_URL = "http://localhost:8080/api/workdays";
 
@@ -57,6 +57,12 @@ export const workdayService = {
             console.error("Validation request failed", err);
             return { valid: false, error: "Validation request failed" };
         }
+    },
+
+    getDurations: async (id: string): Promise<JsWorkDayDurations | null> => {
+        const res = await fetch(`${BASE_URL}/day-duration?id=${id}`);
+        if (!res.ok) return null;
+        return res.json();
     },
 };
 

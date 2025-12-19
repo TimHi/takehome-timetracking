@@ -9,6 +9,7 @@ import timhi.timetracker.shared_sdk.model.TimeRange
 import timhi.timetracker.shared_sdk.model.TimeRangeType
 import timhi.timetracker.shared_sdk.model.WorkDay
 import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 /* =========================
  * Work time calculations
@@ -76,4 +77,10 @@ fun formatDate(date: LocalDate): String {
     val year = date.year.toString()
 
     return "$day.$month.$year"
+}
+
+fun Duration.toHHmm(): String {
+    val hours = toLong(DurationUnit.HOURS)
+    val minutes = toLong(DurationUnit.MINUTES) % 60
+    return "${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
 }
