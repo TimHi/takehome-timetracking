@@ -1,12 +1,12 @@
 package timhi.timetracker.backend.config
 
-
 import kotlinx.datetime.*
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import timhi.timetracker.backend.service.WorkDayService
 import timhi.timetracker.shared_sdk.model.TimeRange
+import timhi.timetracker.shared_sdk.model.TimeRangeType
 import timhi.timetracker.shared_sdk.model.WorkDay
 
 @Configuration
@@ -17,11 +17,10 @@ class SampleDataInitializer {
 
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
-        // Helper to create Instant from LocalDate + hour
-        fun LocalDate.at(hour: Int, minute: Int = 0): Instant {
-            val ldt = LocalDateTime(year, monthNumber, dayOfMonth, hour, minute)
-            return ldt.toInstant(TimeZone.currentSystemDefault())
-        }
+        // Helper to create Instant from LocalDate + hour/minute
+        fun LocalDate.at(hour: Int, minute: Int = 0): Instant =
+            LocalDateTime(year, monthNumber, dayOfMonth, hour, minute)
+                .toInstant(TimeZone.currentSystemDefault())
 
         val sampleWorkDays = mutableListOf<WorkDay>()
 
@@ -31,8 +30,11 @@ class SampleDataInitializer {
             val date = prevWeek.plus(i.toLong(), DateTimeUnit.DAY)
             sampleWorkDays += WorkDay(
                 date = date,
-                workTimes = listOf(TimeRange(start = date.at(9), end = date.at(13))),
-                breakTimes = listOf(TimeRange(start = date.at(11), end = date.at(11, 15)))
+                timeRanges = listOf(
+                    TimeRange(date.at(9), date.at(11), TimeRangeType.WORK),
+                    TimeRange(date.at(11), date.at(11, 15), TimeRangeType.BREAK),
+                    TimeRange(date.at(11, 15), date.at(13), TimeRangeType.WORK)
+                )
             )
         }
 
@@ -41,8 +43,11 @@ class SampleDataInitializer {
             val date = today.plus(i.toLong(), DateTimeUnit.DAY)
             sampleWorkDays += WorkDay(
                 date = date,
-                workTimes = listOf(TimeRange(start = date.at(8), end = date.at(12))),
-                breakTimes = listOf(TimeRange(start = date.at(10), end = date.at(10, 15)))
+                timeRanges = listOf(
+                    TimeRange(date.at(8), date.at(10), TimeRangeType.WORK),
+                    TimeRange(date.at(10), date.at(10, 15), TimeRangeType.BREAK),
+                    TimeRange(date.at(10, 15), date.at(12), TimeRangeType.WORK)
+                )
             )
         }
 
@@ -52,8 +57,11 @@ class SampleDataInitializer {
             val date = nextWeek.plus(i.toLong(), DateTimeUnit.DAY)
             sampleWorkDays += WorkDay(
                 date = date,
-                workTimes = listOf(TimeRange(start = date.at(9), end = date.at(13))),
-                breakTimes = emptyList()
+                timeRanges = listOf(
+                    TimeRange(date.at(9), date.at(12), TimeRangeType.WORK),
+                    TimeRange(date.at(12), date.at(12, 30), TimeRangeType.BREAK),
+                    TimeRange(date.at(12, 30), date.at(13), TimeRangeType.WORK)
+                )
             )
         }
 
