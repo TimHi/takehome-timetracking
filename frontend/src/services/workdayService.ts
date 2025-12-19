@@ -38,4 +38,29 @@ export const workdayService = {
     delete: async (id: number): Promise<void> => {
         await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
     },
+
+    getWeekLabel: async (offset: number = 0): Promise<string> => {
+        const res = await fetch(`${BASE_URL}/week-label?offset=${offset}`);
+        return res.text();
+    },
+
+    varlidateWorkDay: async (workDay: JsWorkDay): Promise<ValidationResponse> => {
+        try {
+            const res = await fetch(`${BASE_URL}/validate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(workDay)
+            });
+
+            return await res.json() as ValidationResponse;
+        } catch (err) {
+            console.error("Validation request failed", err);
+            return { valid: false, error: "Validation request failed" };
+        }
+    },
 };
+
+interface ValidationResponse {
+    valid: boolean;
+    error?: string;
+}

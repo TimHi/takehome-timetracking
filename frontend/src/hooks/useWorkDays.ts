@@ -16,7 +16,6 @@ export function useWorkDays(initialOffset: number = 0) {
 
     }, []);
 
-
     // --- CRUD methods ---
     const upsert = useCallback(async (workDay: JsWorkDay): Promise<JsWorkDay> => {
         return workdayService.upsert(workDay);
@@ -43,9 +42,19 @@ export function useWorkDays(initialOffset: number = 0) {
         }
     }, []);
 
+    const getWeekLabel = useCallback(async (weekOffset: number): Promise<string> => {
+        return await workdayService.getWeekLabel(weekOffset);
+    }, []);
+
+    const validateWorkDay = useCallback(async (workDay: JsWorkDay): Promise<boolean> => {
+        const response = await workdayService.varlidateWorkDay(workDay);
+        return response.valid;
+    }, []);
+
     // --- Stable return object ---
     return useMemo(
         () => ({
+            validateWorkDay,
             listAll,
             loading,
             offset,
@@ -55,7 +64,8 @@ export function useWorkDays(initialOffset: number = 0) {
             remove,
             getByDate,
             getById,
+            getWeekLabel
         }),
-        [listAll, loading, offset, setOffset, fetchWeek, upsert, remove, getByDate, getById]
+        [validateWorkDay, listAll, loading, offset, setOffset, fetchWeek, upsert, remove, getByDate, getById, getWeekLabel]
     );
 }
