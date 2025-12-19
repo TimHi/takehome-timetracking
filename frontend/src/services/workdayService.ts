@@ -19,7 +19,7 @@ export const workdayService = {
         return res.json();
     },
 
-    getById: async (id: number): Promise<JsWorkDay | null> => {
+    getById: async (id: string): Promise<JsWorkDay | null> => {
         const res = await fetch(`${BASE_URL}/${id}`);
         if (!res.ok) return null;
         return res.json();
@@ -44,7 +44,7 @@ export const workdayService = {
         return res.text();
     },
 
-    varlidateWorkDay: async (workDay: JsWorkDay): Promise<ValidationResponse> => {
+    validateWorkDay: async (workDay: JsWorkDay): Promise<ValidationResponse> => {
         try {
             const res = await fetch(`${BASE_URL}/validate`, {
                 method: "POST",

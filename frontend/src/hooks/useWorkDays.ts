@@ -29,7 +29,7 @@ export function useWorkDays(initialOffset: number = 0) {
         return workdayService.getByDate(date);
     }, []);
 
-    const getById = useCallback((id: number): Promise<JsWorkDay | null> => {
+    const getById = useCallback((id: string): Promise<JsWorkDay | null> => {
         return workdayService.getById(id);
     }, []);
 
@@ -47,7 +47,7 @@ export function useWorkDays(initialOffset: number = 0) {
     }, []);
 
     const validateWorkDay = useCallback(async (workDay: JsWorkDay): Promise<boolean> => {
-        const response = await workdayService.varlidateWorkDay(workDay);
+        const response = await workdayService.validateWorkDay(workDay);
         return response.valid;
     }, []);
 
