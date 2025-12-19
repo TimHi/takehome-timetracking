@@ -12,9 +12,11 @@ import timhi.timetracker.shared_sdk.model.WorkDay
  * DTO → Domain
  * ========================= */
 
+
 fun WorkDayDto.toWorkDay(): WorkDay = WorkDay(
-    date = LocalDate.parse(this.date), // parses "yyyy-MM-dd"
-    timeRanges = this.timeRanges.map { it.toTimeRange() }
+    id = this.id,  // can be null if new
+    date = LocalDate.parse(this.date),
+    timeRanges = timeRanges.map { it.toTimeRange() }
 )
 
 fun TimeRangeDto.toTimeRange(): TimeRange = TimeRange(
@@ -28,8 +30,9 @@ fun TimeRangeDto.toTimeRange(): TimeRange = TimeRange(
  * ========================= */
 
 fun WorkDay.toDto(): WorkDayDto = WorkDayDto(
+    id = this.id,
     date = this.date.toString(),
-    timeRanges = this.timeRanges.map { it.toDto() }
+    timeRanges = timeRanges.map { it.toDto() }
 )
 
 fun TimeRange.toDto(): TimeRangeDto = TimeRangeDto(

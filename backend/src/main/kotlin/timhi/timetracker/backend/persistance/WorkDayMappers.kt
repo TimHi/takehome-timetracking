@@ -8,11 +8,13 @@ import timhi.timetracker.shared_sdk.model.WorkDay
 import kotlinx.datetime.toKotlinInstant
 
 fun WorkDayEntity.toDomain(): WorkDay = WorkDay(
+    id = this.id,
     date = date.toKotlinLocalDate(),
-timeRanges = timeRanges.map { it.toDomain() }
+    timeRanges = timeRanges.map { it.toDomain() }
 )
 
 fun WorkDay.toEntity(): WorkDayEntity = WorkDayEntity(
+    id = id,
     date = date.toJavaLocalDate(),
     timeRanges = timeRanges.map { it.toEmbeddable() }
 )
