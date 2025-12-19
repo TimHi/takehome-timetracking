@@ -4,6 +4,7 @@ import { Card, CardContent, Typography, Box, Stack } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FreeBreakfastIcon from '@mui/icons-material/FreeBreakfast';
 import { formatDate, formatTime } from '../util/timeFormat';
+import type { JsTimeRange } from 'shared';
 
 interface WorkDayCardProps {
 	workDayId: string;
@@ -26,7 +27,7 @@ function WorkDayCard({ workDayId }: WorkDayCardProps) {
 					{formatDate(workDay.date)}
 				</Typography>
 				<Stack spacing={1}>
-					{workDay.timeRanges.map((range: any, index: number) => {
+					{workDay.timeRanges.map((range: JsTimeRange, index: number) => {
 						const isBreak = range.type.toLowerCase() === 'break';
 						const bgColor = isBreak ? 'lightcoral' : 'lightgreen';
 						const Icon = isBreak ? FreeBreakfastIcon : AccessTimeIcon;
