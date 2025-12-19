@@ -7,12 +7,10 @@ import kotlin.js.JsExport
 @JsExport
 enum class WorkDayValidationError {
     EMPTY_TIME_RANGE,
-
     END_BEFORE_START,
-    OVERLAPPING_TIME_RANGES,
-
     MAX_WORK_TIME_EXCEEDED,
-
     BREAK_TOO_SHORT,
-    INSUFFICIENT_BREAK_TIME
+    INSUFFICIENT_BREAK_TIME,
+    TIME_RANGES_OVERLAP,
+    EMPTY_WORK_TIME
 }
