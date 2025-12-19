@@ -15,12 +15,10 @@ class ValidateJsWorkDayTest {
     fun `validate valid JsWorkDay succeeds`() {
         val jsWorkDay = JsWorkDay(
             date = "2025-12-16",
-            workTimes = arrayOf(
-                JsTimeRange("2025-12-16T08:00:00Z", "2025-12-16T12:00:00Z"),
-                JsTimeRange("2025-12-16T13:00:00Z", "2025-12-16T17:00:00Z")
-            ),
-            breakTimes = arrayOf(
-                JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z")
+            timeRanges = arrayOf(
+                JsTimeRange("2025-12-16T08:00:00Z", "2025-12-16T12:00:00Z", "WORK"),
+                JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z", "BREAK"),
+                JsTimeRange("2025-12-16T13:00:00Z", "2025-12-16T17:00:00Z", "WORK")
             )
         )
 
@@ -32,9 +30,8 @@ class ValidateJsWorkDayTest {
     fun `validate JsWorkDay with empty workTimes throws exception`() {
         val jsWorkDay = JsWorkDay(
             date = "2025-12-16",
-            workTimes = arrayOf(),
-            breakTimes = arrayOf(
-                JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z")
+            timeRanges = arrayOf(
+                JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z", "BREAK")
             )
         )
 
@@ -47,12 +44,26 @@ class ValidateJsWorkDayTest {
     fun `validate JsWorkDay with overlapping workTimes throws exception`() {
         val jsWorkDay = JsWorkDay(
             date = "2025-12-16",
-            workTimes = arrayOf(
-                JsTimeRange("2025-12-16T08:00:00Z", "2025-12-16T12:00:00Z"),
-                JsTimeRange("2025-12-16T11:00:00Z", "2025-12-16T17:00:00Z") // overlaps
-            ),
-            breakTimes = arrayOf(
-                JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z")
+            timeRanges = arrayOf(
+                JsTimeRange("2025-12-16T08:00:00Z", "2025-12-16T12:00:00Z", "WORK"),
+                JsTimeRange("2025-12-16T11:00:00Z", "2025-12-16T17:00:00Z", "WORK"),
+                JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T13:00:00Z", "BREAK")
+            )
+        )
+
+        assertFailsWith<WorkDayValidationException> {
+            validate(jsWorkDay)
+        }
+    }
+
+    @Test
+    fun `validate JsWorkDay with insufficient break throws exception`() {
+        val jsWorkDay = JsWorkDay(
+            date = "2025-12-16",
+            timeRanges = arrayOf(
+                JsTimeRange("2025-12-16T08:00:00Z", "2025-12-16T12:00:00Z", "WORK"),
+                JsTimeRange("2025-12-16T12:00:00Z", "2025-12-16T12:10:00Z", "BREAK"),
+                JsTimeRange("2025-12-16T12:10:00Z", "2025-12-16T18:00:00Z", "WORK")
             )
         )
 
