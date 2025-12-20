@@ -11,6 +11,7 @@ import { useWorkDayDetail } from '../hooks/useWorkDayDetail';
 import { formatDate } from '../util/timeFormat';
 import { useWorkDayDurations } from '../hooks/useWorkDayDurations';
 import { useWorkDays } from '../hooks/useWorkDays';
+import TimeRangeList from './TimeRangeList';
 
 interface WeekDayCardProps {
 	workDayId: string;
@@ -53,6 +54,7 @@ function WeekDayCard({ workDayId }: WeekDayCardProps) {
 								</>
 							)}
 						</Stack>
+						<TimeRangeList timeRanges={workDay.timeRanges} spacing={0.5} />
 					</Stack>
 				</CardContent>
 			</CardActionArea>

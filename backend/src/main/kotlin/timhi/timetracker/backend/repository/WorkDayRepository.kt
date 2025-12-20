@@ -10,7 +10,7 @@ import java.time.LocalDate
 interface WorkDayRepository : JpaRepository<WorkDayEntity, Long> {
 
     fun findByDate(date: LocalDate): WorkDayEntity?
-
+    fun existsByDate(date: LocalDate): Boolean
     fun findByDateBetween(
         start: LocalDate,
         end: LocalDate

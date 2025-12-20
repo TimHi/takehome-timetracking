@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { JsWorkDay, JsTimeRange } from 'shared';
+import type { JsWorkDay } from 'shared';
 import { useWorkDays } from '../hooks/useWorkDays';
 import { formatDate } from '../util/timeFormat';
-import TimeRange from '../components/TimeRange';
+import TimeRangeList from '../components/TimeRangeList';
 
 function DayView() {
 	const { id } = useParams();
@@ -75,11 +75,7 @@ function DayView() {
 					<Typography variant='h6' gutterBottom>
 						{formatDate(workDay.date)}
 					</Typography>
-					<Stack spacing={1}>
-						{workDay.timeRanges.map((range: JsTimeRange, index: number) => (
-							<TimeRange key={index} index={index} range={range} />
-						))}
-					</Stack>
+					<TimeRangeList timeRanges={workDay.timeRanges} />
 				</>
 			) : (
 				<Typography>Keine Daten</Typography>
