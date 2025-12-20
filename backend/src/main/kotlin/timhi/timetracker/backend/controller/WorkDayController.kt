@@ -12,6 +12,8 @@ import timhi.timetracker.backend.dto.WorkDayDto
 import timhi.timetracker.backend.dto.WorkDayDurations
 import timhi.timetracker.backend.mappers.toDto
 import timhi.timetracker.backend.mappers.toWorkDay
+import timhi.timetracker.backend.persistance.toWorkDay
+import timhi.timetracker.backend.request.WorkDayUpsertRequest
 import timhi.timetracker.backend.service.WorkDayService
 import timhi.timetracker.shared_sdk.breakDuration
 import timhi.timetracker.shared_sdk.model.WorkDay
@@ -59,8 +61,8 @@ class WorkDayController(
     /** Create or update a workday (upsert by date) */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun upsert(@RequestBody workDay: WorkDay): WorkDayDto =
-        service.upsert(workDay).toDto()
+    fun upsert(@RequestBody req: WorkDayUpsertRequest): WorkDayDto =
+        service.upsert(req.toWorkDay()).toDto()
 
     /** Delete a workday by id */
     @DeleteMapping("/{id}")

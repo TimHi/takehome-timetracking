@@ -12,13 +12,12 @@ interface WorkDayCardProps {
 }
 
 function WorkDayCard({ workDayId }: WorkDayCardProps) {
-	const { workDay, loading, fetchWeekDay } = useWorkDayDetail();
+	const { workDay, fetchWeekDay } = useWorkDayDetail();
 
 	useEffect(() => {
 		fetchWeekDay(workDayId);
 	}, [workDayId, fetchWeekDay]);
 
-	if (loading) return <div>Loading...</div>;
 	if (!workDay) return <div>No data</div>;
 
 	return (

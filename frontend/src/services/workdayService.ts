@@ -2,12 +2,30 @@ import type { JsWorkDay, JsWorkDayDurations } from "shared";
 
 const BASE_URL = "http://localhost:8080/api/workdays";
 
-const toKotlinxLocalDate = (isoDate: string) => {
-    const [datePart] = isoDate.split("T");
-    const [year, month, day] = datePart.split("-").map(Number);
-    if (!year || !month || !day) return isoDate;
-    return { year, monthNumber: month, dayOfMonth: day };
+const normalizeIsoString = (value: unknown): string => {
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object" && "value" in value) {
+        const nested = (value as { value?: unknown }).value;
+        if (typeof nested === "string") return nested;
+    }
+    return "";
 };
+
+const normalizeDate = (value: unknown): string => {
+    const raw = normalizeIsoString(value);
+    if (!raw) return "";
+    return raw.includes("T") ? raw.split("T")[0] : raw;
+};
+
+const normalizeWorkDay = (workDay: JsWorkDay): JsWorkDay => ({
+    ...workDay,
+    date: normalizeDate(workDay.date),
+    timeRanges: (workDay.timeRanges ?? []).map((range) => ({
+        ...range,
+        start: normalizeIsoString(range.start),
+        end: normalizeIsoString(range.end),
+    })),
+});
 
 export const workdayService = {
     listAll: async (): Promise<JsWorkDay[]> => {
@@ -34,7 +52,7 @@ export const workdayService = {
 
     // --- New CRUD methods ---
     upsert: async (workDay: JsWorkDay): Promise<JsWorkDay> => {
-        const payload = { ...workDay, date: toKotlinxLocalDate(workDay.date) };
+        const payload = normalizeWorkDay(workDay);
         const res = await fetch(`${BASE_URL}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -54,10 +72,11 @@ export const workdayService = {
 
     validateWorkDay: async (workDay: JsWorkDay): Promise<ValidationResponse> => {
         try {
+            const payload = normalizeWorkDay(workDay);
             const res = await fetch(`${BASE_URL}/validate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(workDay)
+                body: JSON.stringify(payload)
             });
 
             return await res.json() as ValidationResponse;

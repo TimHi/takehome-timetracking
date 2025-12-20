@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Box, Stack, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { JsWorkDay, JsTimeRange } from 'shared';
 import { useWorkDays } from '../hooks/useWorkDays';
 import { formatDate } from '../util/timeFormat';
@@ -8,6 +9,7 @@ import TimeRange from '../components/TimeRange';
 
 function DayView() {
 	const { id } = useParams();
+	const navigate = useNavigate();
 	const { getById } = useWorkDays();
 	const [workDay, setWorkDay] = useState<JsWorkDay | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -45,9 +47,16 @@ function DayView() {
 
 	return (
 		<Box p={2}>
-			<Typography variant='h5' gutterBottom>
-				Workday
-			</Typography>
+			<Stack direction='row' alignItems='center' justifyContent='space-between' mb={1}>
+				<Typography variant='h5'>Workday</Typography>
+				{id ? (
+					<Tooltip title='Edit time ranges'>
+						<IconButton aria-label='edit workday' onClick={() => navigate(`/day/${id}/edit`)}>
+							<EditIcon />
+						</IconButton>
+					</Tooltip>
+				) : null}
+			</Stack>
 
 			{loading ? (
 				<Typography>Loading...</Typography>
