@@ -30,6 +30,7 @@ export function useWorkDays(initialOffset: number = 0) {
     }, []);
 
     const getById = useCallback((id: string): Promise<JsWorkDay | null> => {
+        if (!id) return Promise.resolve(null);
         return workdayService.getById(id);
     }, []);
 

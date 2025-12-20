@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import {
 	Alert,
 	Box,
@@ -31,9 +31,7 @@ const toIsoString = (date: string, time: string) => {
 	return localDateTime.toISOString();
 };
 
-function DayEditView() {
-	const { id } = useParams();
-	const navigate = useNavigate();
+const useWorkDayEditor = (id?: string) => {
 	const { getById, upsert, validateWorkDay } = useWorkDays();
 	const [workDay, setWorkDay] = useState<JsWorkDay | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -42,18 +40,13 @@ function DayEditView() {
 	const [isValid, setIsValid] = useState<boolean | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
-	const typeOptions = useMemo(() => {
-		if (!workDay) return DEFAULT_TYPES;
-		const seen = new Set(DEFAULT_TYPES);
-		workDay.timeRanges.forEach((range) => seen.add(range.type));
-		return Array.from(seen);
-	}, [workDay]);
-
 	useEffect(() => {
 		let active = true;
 
 		const load = async () => {
 			if (!id) {
+				setWorkDay(null);
+				setIsValid(null);
 				setError('No day id provided.');
 				return;
 			}
@@ -80,7 +73,10 @@ function DayEditView() {
 	}, [getById, id]);
 
 	useEffect(() => {
-		if (!workDay) return;
+		if (!workDay) {
+			setIsValid(null);
+			return;
+		}
 		let active = true;
 		setValidating(true);
 
@@ -102,36 +98,88 @@ function DayEditView() {
 		};
 	}, [validateWorkDay, workDay]);
 
-	const updateRange = (index: number, nextRange: JsTimeRange) => {
+	const saveWorkDay = useCallback(async () => {
+		if (!workDay) return null;
+
+		setSaving(true);
+		setError(null);
+		try {
+			return await upsert(workDay);
+		} catch (err) {
+			console.error(err);
+			setError('Failed to save workday.');
+			return null;
+		} finally {
+			setSaving(false);
+		}
+	}, [upsert, workDay]);
+
+	return {
+		workDay,
+		setWorkDay,
+		loading,
+		saving,
+		validating,
+		isValid,
+		error,
+		setError,
+		saveWorkDay,
+	};
+};
+
+function DayEditView() {
+	const { id } = useParams();
+	const navigate = useNavigate();
+	const {
+		workDay,
+		setWorkDay,
+		loading,
+		saving,
+		validating,
+		isValid,
+		error,
+		setError,
+		saveWorkDay,
+	} = useWorkDayEditor(id);
+
+	const typeOptions = useMemo(() => {
+		if (!workDay) return DEFAULT_TYPES;
+		const seen = new Set(DEFAULT_TYPES);
+		workDay.timeRanges.forEach((range) => seen.add(range.type));
+		return Array.from(seen);
+	}, [workDay]);
+
+	const updateRange = useCallback((
+		index: number,
+		updater: (range: JsTimeRange, day: JsWorkDay) => JsTimeRange
+	) => {
 		setWorkDay((prev) => {
 			if (!prev) return prev;
 			const nextRanges = prev.timeRanges.map((range, i) =>
-				i === index ? nextRange : range
+				i === index ? updater(range, prev) : range
 			);
-			return { ...prev, timeRanges: nextRanges };
+			return prev.copy(undefined, undefined, nextRanges);
 		});
-	};
+	}, [setWorkDay]);
 
 	const handleTimeChange =
 		(index: number, field: 'start' | 'end') =>
 		(event: ChangeEvent<HTMLInputElement>) => {
-			if (!workDay) return;
 			const timeValue = event.target.value;
-			const nextRange = {
-				...workDay.timeRanges[index],
-				[field]: toIsoString(workDay.date, timeValue),
-			};
-			updateRange(index, nextRange);
+			updateRange(index, (range, day) => {
+				const isoValue = toIsoString(day.date, timeValue);
+				return field === 'start'
+					? range.copy(isoValue, undefined, undefined)
+					: range.copy(undefined, isoValue, undefined);
+			});
 		};
 
 	const handleTypeChange =
 		(index: number) => (event: ChangeEvent<HTMLInputElement>) => {
-			if (!workDay) return;
-			const nextRange = {
-				...workDay.timeRanges[index],
-				type: event.target.value,
-			};
-			updateRange(index, nextRange);
+			const nextType = event.target.value;
+			updateRange(index, (range) =>
+				range.copy(undefined, undefined, nextType)
+			);
 		};
 
 	const handleSave = async () => {
@@ -141,19 +189,10 @@ function DayEditView() {
 			return;
 		}
 
-		setSaving(true);
-		setError(null);
-		try {
-			console.log('Saving workday', workDay);
-			const saved = await upsert(workDay);
-			const savedId = saved?.id ?? workDay.id;
-			navigate(`/day/${savedId}`);
-		} catch (err) {
-			console.error(err);
-			setError('Failed to save workday.');
-		} finally {
-			setSaving(false);
-		}
+		const saved = await saveWorkDay();
+		if (!saved) return;
+		const savedId = saved.id ?? workDay.id;
+		navigate(`/day/${savedId}`);
 	};
 
 	if (loading) {
