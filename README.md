@@ -1,4 +1,4 @@
-# Tim's toller Timetracker
+# takehome-timetracking
 Time-tracking app for logging daily work, breaks, and other ranges.
 View the week at a glance and manage entries.
 
@@ -17,9 +17,9 @@ Run tests from each module root.
 
 ## Technical overview of the chosen techs
 Repository layout at a glance.
-- Frontend uses React.
-- Backend uses Spring Boot.
-- KMP uses Kotlin.
+- Frontend uses React 19.2.
+- Backend uses Spring Boot 3.5.8.
+- KMP uses Kotlin 2.2.21.
 
 ## Architecture diagram
 High-level view of how the pieces fit together.
