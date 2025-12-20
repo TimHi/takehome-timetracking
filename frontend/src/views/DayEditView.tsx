@@ -13,6 +13,7 @@ import type { JsTimeRange, JsWorkDay } from 'shared';
 import { JsTimeRange as JsTimeRangeCtor } from 'shared';
 import { useWorkDayEditor } from '../hooks/useWorkDayEditor';
 import { formatDate } from '../util/timeFormat';
+import { toWorkDayValidationMessage } from '../util/enumMessages';
 import {
 	buildTypeOptions,
 	toIsoString,
@@ -142,6 +143,8 @@ function DayEditView({ id }: DayEditViewProps) {
 		navigate('/week');
 	};
 
+	const validationMessage = toWorkDayValidationMessage(validationError);
+
 	const handleDelete = async () => {
 		if (!workDay?.id) return;
 		const deleted = await deleteWorkDay(workDay.id);
@@ -193,7 +196,7 @@ function DayEditView({ id }: DayEditViewProps) {
 					<Alert severity='success'>{'Keine Probleme gefunden.'}</Alert>
 				) : isValid === false ? (
 					<Alert severity='error'>
-						{validationError ?? 'Validierung fehlgeschlagen.'}
+						{validationMessage ?? 'Validierung fehlgeschlagen.'}
 					</Alert>
 				) : null}
 

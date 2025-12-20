@@ -96,12 +96,12 @@ class WorkDayController(
         val domain = workDay.toWorkDay()
 
         // 1) Check uniqueness (by date)
-        val existing = service.getWorkDay(domain.date) // your service already has getWorkDay(LocalDate)
+        val existing = service.getWorkDay(domain.date) 
         val isConflict = existing != null && existing.id != domain.id
         if (isConflict) {
             return ValidationResponse(
                 valid = false,
-                error = "Workday for ${domain.date} already exists."
+                error = "Arbeitstag ${domain.date} existiert bereits."
             )
         }
 

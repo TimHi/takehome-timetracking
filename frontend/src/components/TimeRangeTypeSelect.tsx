@@ -1,5 +1,6 @@
 import { MenuItem, TextField } from '@mui/material';
 import type { ChangeEvent } from 'react';
+import { toTimeRangeTypeLabel } from '../util/enumMessages';
 
 type TimeRangeTypeSelectProps = {
 	label: string;
@@ -10,18 +11,13 @@ type TimeRangeTypeSelectProps = {
 	displayMap?: Record<string, string>;
 };
 
-const DEFAULT_DISPLAY_MAP: Record<string, string> = {
-	WORK: 'Arbeit',
-	BREAK: 'Pause',
-};
-
 function TimeRangeTypeSelect({
 	label,
 	value,
 	options,
 	onChange,
 	minWidth = 140,
-	displayMap = DEFAULT_DISPLAY_MAP,
+	displayMap,
 }: TimeRangeTypeSelectProps) {
 	return (
 		<TextField
@@ -31,11 +27,14 @@ function TimeRangeTypeSelect({
 			onChange={onChange}
 			sx={{ minWidth }}
 		>
-			{options.map((option) => (
-				<MenuItem key={option} value={option}>
-					{displayMap[option] ?? option}
-				</MenuItem>
-			))}
+			{options.map((option) => {
+				const label = displayMap?.[option] ?? toTimeRangeTypeLabel(option);
+				return (
+					<MenuItem key={option} value={option}>
+						{label}
+					</MenuItem>
+				);
+			})}
 		</TextField>
 	);
 }
