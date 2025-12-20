@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ListIcon from '@mui/icons-material/List';
@@ -17,6 +17,9 @@ function HeaderNav() {
 				>
 					<HomeIcon />
 				</IconButton>
+				<Typography variant='h6' component='div' sx={{ mr: 1 }}>
+					Tim's toller Timetracker
+				</Typography>
 				<Box sx={{ display: 'flex', gap: 1 }}>
 					<Button component={Link} to='/week' startIcon={<CalendarTodayIcon />}>
 						Wochen
