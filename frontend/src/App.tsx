@@ -14,6 +14,7 @@ function App() {
 				<Route path='/' element={<Navigate to='/week' replace />} />
 				<Route path='/week' element={<WeeklyView />} />
 				<Route path='/days' element={<WorkDayListView />} />
+				<Route path='/day/new' element={<DayEditView />} />
 				<Route path='/day/:id/edit' element={<DayEditView />} />
 				<Route path='/day/:id' element={<DayView />} />
 				<Route path='*' element={<Navigate to='/week' replace />} />

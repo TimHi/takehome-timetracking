@@ -18,7 +18,7 @@ const normalizeDate = (value: unknown): string => {
 };
 
 type WorkDayPayload = {
-    id: string;
+    id: string | null;
     date: string;
     timeRanges: Array<{
         start: string;
@@ -28,7 +28,7 @@ type WorkDayPayload = {
 };
 
 const normalizeWorkDay = (workDay: JsWorkDay): WorkDayPayload => ({
-    id: workDay.id,
+    id: workDay.id && workDay.id !== "0" ? workDay.id : null,
     date: normalizeDate(workDay.date),
     timeRanges: (workDay.timeRanges ?? []).map((range) => ({
         start: normalizeIsoString(range.start),

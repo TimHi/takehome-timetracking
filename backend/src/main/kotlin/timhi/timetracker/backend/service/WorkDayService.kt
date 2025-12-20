@@ -67,7 +67,7 @@ class WorkDayService(
             (base.dayOfWeek.ordinal - DayOfWeek.MONDAY.ordinal).toLong(),
             DateTimeUnit.DAY
         )
-        val end = start.plus(6, DateTimeUnit.DAY)
+        val end = start.plus(7, DateTimeUnit.DAY)
 
         return start to end
     }

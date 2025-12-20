@@ -2,6 +2,7 @@ import { AppBar, Box, Button, IconButton, Toolbar } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ListIcon from '@mui/icons-material/List';
+import AddIcon from '@mui/icons-material/Add';
 import { Link } from 'react-router-dom';
 
 function HeaderNav() {
@@ -24,6 +25,15 @@ function HeaderNav() {
 						Tage
 					</Button>
 				</Box>
+				<Box sx={{ flexGrow: 1 }} />
+				<Button
+					startIcon={<AddIcon />}
+					variant='contained'
+					component={Link}
+					to='/day/new'
+				>
+					Arbeitstag erfassen
+				</Button>
 			</Toolbar>
 		</AppBar>
 	);

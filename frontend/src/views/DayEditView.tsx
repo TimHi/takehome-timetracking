@@ -1,41 +1,53 @@
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from 'react';
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	type ChangeEvent,
+} from 'react';
 import {
 	Alert,
 	Box,
 	Button,
 	CircularProgress,
-	MenuItem,
 	Stack,
 	TextField,
 	Typography,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { JsTimeRange, JsWorkDay } from 'shared';
+import {
+	JsTimeRange as JsTimeRangeCtor,
+	JsWorkDay as JsWorkDayCtor,
+} from 'shared';
 import { useWorkDays } from '../hooks/useWorkDays';
 import { formatDate } from '../util/timeFormat';
+import {
+	buildTypeOptions,
+	toIsoString,
+	toTimeValue,
+	updateWorkDayRange,
+} from '../util/workDayEditor';
+import AddTimeRange from '../components/AddTimeRange';
+import TimeRangeFields from '../components/TimeRangeFields';
+import TimeRangeTypeSelect from '../components/TimeRangeTypeSelect';
 
-const DEFAULT_TYPES = ['WORK', 'BREAK'];
-
-const toTimeValue = (isoString: string) => {
-	const date = new Date(isoString);
-	if (Number.isNaN(date.getTime())) return '';
-	const hours = String(date.getHours()).padStart(2, '0');
-	const minutes = String(date.getMinutes()).padStart(2, '0');
-	return `${hours}:${minutes}`;
+const toDateInputValue = (date: Date) => {
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const day = String(date.getDate()).padStart(2, '0');
+	return `${year}-${month}-${day}`;
 };
 
-const toIsoString = (date: string, time: string) => {
-	if (!date || !time) return '';
-	const localDateTime = new Date(`${date}T${time}:00`);
-	if (Number.isNaN(localDateTime.getTime())) return '';
-	return localDateTime.toISOString();
-};
+const createEmptyWorkDay = (date: string) =>
+	new JsWorkDayCtor('', date, [new JsTimeRangeCtor('', '', 'WORK')]);
 
 const useWorkDayEditor = (id?: string) => {
-	const { getById, upsert, validateWorkDay } = useWorkDays();
+	const { getById, upsert, validateWorkDay, remove } = useWorkDays();
 	const [workDay, setWorkDay] = useState<JsWorkDay | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [saving, setSaving] = useState(false);
+	const [deleting, setDeleting] = useState(false);
 	const [validating, setValidating] = useState(false);
 	const [isValid, setIsValid] = useState<boolean | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -44,15 +56,16 @@ const useWorkDayEditor = (id?: string) => {
 		let active = true;
 
 		const load = async () => {
+			setError(null);
+
 			if (!id) {
-				setWorkDay(null);
+				setWorkDay(createEmptyWorkDay(toDateInputValue(new Date())));
 				setIsValid(null);
-				setError('No day id provided.');
+				setLoading(false);
 				return;
 			}
 
 			setLoading(true);
-			setError(null);
 			try {
 				const result = await getById(id);
 				if (!active) return;
@@ -114,53 +127,79 @@ const useWorkDayEditor = (id?: string) => {
 		}
 	}, [upsert, workDay]);
 
+	const deleteWorkDay = useCallback(
+		async (workDayId: string) => {
+			const numericId = Number(workDayId);
+			if (!Number.isFinite(numericId)) {
+				setError('Invalid workday id.');
+				return false;
+			}
+
+			setDeleting(true);
+			setError(null);
+			try {
+				await remove(numericId);
+				return true;
+			} catch (err) {
+				console.error(err);
+				setError('Failed to delete workday.');
+				return false;
+			} finally {
+				setDeleting(false);
+			}
+		},
+		[remove]
+	);
+
 	return {
 		workDay,
 		setWorkDay,
 		loading,
 		saving,
+		deleting,
 		validating,
 		isValid,
 		error,
 		setError,
 		saveWorkDay,
+		deleteWorkDay,
 	};
 };
 
-function DayEditView() {
-	const { id } = useParams();
+type DayEditViewProps = {
+	id?: string;
+};
+
+function DayEditView({ id }: DayEditViewProps) {
+	const { id: routeId } = useParams();
+	const effectiveId = id ?? routeId;
+	const isNew = !effectiveId;
 	const navigate = useNavigate();
 	const {
 		workDay,
 		setWorkDay,
 		loading,
 		saving,
+		deleting,
 		validating,
 		isValid,
 		error,
 		setError,
 		saveWorkDay,
-	} = useWorkDayEditor(id);
+		deleteWorkDay,
+	} = useWorkDayEditor(effectiveId);
 
-	const typeOptions = useMemo(() => {
-		if (!workDay) return DEFAULT_TYPES;
-		const seen = new Set(DEFAULT_TYPES);
-		workDay.timeRanges.forEach((range) => seen.add(range.type));
-		return Array.from(seen);
-	}, [workDay]);
+	const typeOptions = useMemo(() => buildTypeOptions(workDay), [workDay]);
 
-	const updateRange = useCallback((
-		index: number,
-		updater: (range: JsTimeRange, day: JsWorkDay) => JsTimeRange
-	) => {
-		setWorkDay((prev) => {
-			if (!prev) return prev;
-			const nextRanges = prev.timeRanges.map((range, i) =>
-				i === index ? updater(range, prev) : range
-			);
-			return prev.copy(undefined, undefined, nextRanges);
-		});
-	}, [setWorkDay]);
+	const updateRange = useCallback(
+		(
+			index: number,
+			updater: (range: JsTimeRange, day: JsWorkDay) => JsTimeRange
+		) => {
+			setWorkDay((prev) => updateWorkDayRange(prev, index, updater));
+		},
+		[setWorkDay]
+	);
 
 	const handleTimeChange =
 		(index: number, field: 'start' | 'end') =>
@@ -177,10 +216,42 @@ function DayEditView() {
 	const handleTypeChange =
 		(index: number) => (event: ChangeEvent<HTMLInputElement>) => {
 			const nextType = event.target.value;
-			updateRange(index, (range) =>
-				range.copy(undefined, undefined, nextType)
-			);
+			updateRange(index, (range) => range.copy(undefined, undefined, nextType));
 		};
+
+	const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+		const nextDate = event.target.value;
+		setWorkDay((prev) => {
+			if (!prev) return prev;
+			const nextRanges = prev.timeRanges.map((range) => {
+				const startTime = toTimeValue(range.start);
+				const endTime = toTimeValue(range.end);
+				const startIso = startTime ? toIsoString(nextDate, startTime) : '';
+				const endIso = endTime ? toIsoString(nextDate, endTime) : '';
+				return range.copy(startIso, endIso, undefined);
+			});
+			return prev.copy(undefined, nextDate, nextRanges);
+		});
+	};
+
+	const handleAddRange = () => {
+		setWorkDay((prev) => {
+			if (!prev) return prev;
+			const nextRanges = [
+				...prev.timeRanges,
+				new JsTimeRangeCtor('', '', 'WORK'),
+			];
+			return prev.copy(undefined, undefined, nextRanges);
+		});
+	};
+
+	const handleRemoveRange = (index: number) => {
+		setWorkDay((prev) => {
+			if (!prev) return prev;
+			const nextRanges = prev.timeRanges.filter((_, i) => i !== index);
+			return prev.copy(undefined, undefined, nextRanges);
+		});
+	};
 
 	const handleSave = async () => {
 		if (!workDay) return;
@@ -192,7 +263,33 @@ function DayEditView() {
 		const saved = await saveWorkDay();
 		if (!saved) return;
 		const savedId = saved.id ?? workDay.id;
-		navigate(`/day/${savedId}`);
+		if (isNew) {
+			navigate(savedId ? `/day/${savedId}` : '/week');
+			return;
+		}
+		if (savedId) {
+			navigate(`/day/${savedId}`);
+		}
+	};
+
+	const handleCancel = () => {
+		if (isNew) {
+			navigate(-1);
+			return;
+		}
+		if (workDay?.id) {
+			navigate(`/day/${workDay.id}`);
+			return;
+		}
+		navigate('/week');
+	};
+
+	const handleDelete = async () => {
+		if (!workDay?.id) return;
+		const deleted = await deleteWorkDay(workDay.id);
+		if (deleted) {
+			navigate('/week');
+		}
 	};
 
 	if (loading) {
@@ -214,17 +311,36 @@ function DayEditView() {
 	return (
 		<Box p={2}>
 			<Stack spacing={2}>
-				<Typography variant='h5'>Edit workday</Typography>
-				<Typography variant='subtitle1'>{formatDate(workDay.date)}</Typography>
+				<Typography variant='h5'>
+					{isNew ? 'Arbeitstag erfassen' : 'Edit workday'}
+				</Typography>
+				{isNew ? (
+					<TextField
+						label='Datum'
+						type='date'
+						value={workDay.date}
+						onChange={handleDateChange}
+					/>
+				) : (
+					<Typography variant='subtitle1'>
+						{formatDate(workDay.date)}
+					</Typography>
+				)}
 
 				{error ? <Alert severity='error'>{error}</Alert> : null}
 
 				{validating ? (
-					<Alert severity='info'>Validating changes...</Alert>
+					<Alert severity='info'>
+						{isNew ? 'Validating changes...' : 'AoberprA¬fe Arbeitstag...'}
+					</Alert>
 				) : isValid === true ? (
-					<Alert severity='success'>Validation passed.</Alert>
+					<Alert severity='success'>
+						{isNew ? 'Validation passed.' : 'Keine Probleme gefunden.'}
+					</Alert>
 				) : isValid === false ? (
-					<Alert severity='error'>Validation failed.</Alert>
+					<Alert severity='error'>
+						{isNew ? 'Validation failed.' : 'Validierung fehlgeschlagen.'}
+					</Alert>
 				) : null}
 
 				<Stack spacing={2}>
@@ -235,50 +351,53 @@ function DayEditView() {
 							spacing={2}
 							alignItems={{ xs: 'stretch', sm: 'center' }}
 						>
-							<TextField
-								select
-								label='Type'
+							<TimeRangeTypeSelect
+								label={isNew ? 'Typ' : 'Art'}
 								value={range.type}
+								options={typeOptions}
 								onChange={handleTypeChange(index)}
-								sx={{ minWidth: 140 }}
+							/>
+							<TimeRangeFields
+								startValue={toTimeValue(range.start)}
+								endValue={toTimeValue(range.end)}
+								onStartChange={handleTimeChange(index, 'start')}
+								onEndChange={handleTimeChange(index, 'end')}
+							/>
+							<Button
+								variant='text'
+								color='error'
+								onClick={() => handleRemoveRange(index)}
 							>
-								{typeOptions.map((type) => (
-									<MenuItem key={type} value={type}>
-										{type}
-									</MenuItem>
-								))}
-							</TextField>
-							<TextField
-								label='Start'
-								type='time'
-								value={toTimeValue(range.start)}
-								onChange={handleTimeChange(index, 'start')}
-								InputLabelProps={{ shrink: true }}
-								inputProps={{ step: 60 }}
-							/>
-							<TextField
-								label='End'
-								type='time'
-								value={toTimeValue(range.end)}
-								onChange={handleTimeChange(index, 'end')}
-								InputLabelProps={{ shrink: true }}
-								inputProps={{ step: 60 }}
-							/>
+								Delete
+							</Button>
 						</Stack>
 					))}
 				</Stack>
 
+				<AddTimeRange onAdd={handleAddRange} />
+
 				<Stack direction='row' spacing={2}>
 					<Button
-						variant='outlined'
-						onClick={() => navigate(`/day/${workDay.id}`)}
+						variant={isNew ? 'text' : 'outlined'}
+						onClick={handleCancel}
+						disabled={isNew ? saving : deleting}
 					>
 						Cancel
 					</Button>
+					{isNew ? null : (
+						<Button
+							variant='outlined'
+							color='error'
+							onClick={handleDelete}
+							disabled={saving || deleting}
+						>
+							{deleting ? 'Deleting...' : 'Delete'}
+						</Button>
+					)}
 					<Button
 						variant='contained'
 						onClick={handleSave}
-						disabled={saving || validating || !isValid}
+						disabled={saving || deleting || validating || !isValid}
 					>
 						{saving ? 'Saving...' : 'Save'}
 					</Button>
