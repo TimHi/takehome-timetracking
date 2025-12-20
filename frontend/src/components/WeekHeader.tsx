@@ -33,7 +33,7 @@ function WeekHeader({
 				<ArrowBackIcon />
 			</IconButton>
 
-			<Typography variant='h6'>{weekLabel || 'Loading...'}</Typography>
+			<Typography variant='h6'>{weekLabel || 'Lädt...'}</Typography>
 
 			<IconButton onClick={onNextWeek}>
 				<ArrowForwardIcon />

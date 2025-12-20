@@ -81,9 +81,22 @@ class WorkDayController(
 
     @PostMapping("/validate")
     fun validate(@RequestBody workDay: WorkDayDto): ValidationResponse {
-        println("Validate ${workDay.date}")
+        // Convert once so we validate the real domain model
+        val domain = workDay.toWorkDay()
+
+        // 1) Check uniqueness (by date)
+        val existing = service.getWorkDay(domain.date) // your service already has getWorkDay(LocalDate)
+        val isConflict = existing != null && existing.id != domain.id
+        if (isConflict) {
+            return ValidationResponse(
+                valid = false,
+                error = "Workday for ${domain.date} already exists."
+            )
+        }
+
+        // 2) Run business validation
         return try {
-            validateWorkDay(workDay.toWorkDay())
+            validateWorkDay(domain)
             ValidationResponse(valid = true)
         } catch (e: WorkDayValidationException) {
             ValidationResponse(valid = false, error = e.message)

@@ -67,7 +67,7 @@ function DayView() {
 			</Stack>
 
 			{loading ? (
-				<Typography>Loading...</Typography>
+				<Typography>Lädt...</Typography>
 			) : error ? (
 				<Typography color='error'>{error}</Typography>
 			) : workDay ? (
