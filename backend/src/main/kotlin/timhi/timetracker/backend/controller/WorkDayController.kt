@@ -20,6 +20,7 @@ import timhi.timetracker.shared_sdk.model.WorkDay
 import timhi.timetracker.shared_sdk.netWorkDuration
 import timhi.timetracker.shared_sdk.toHHmm
 import timhi.timetracker.shared_sdk.validateWorkDay
+import timhi.timetracker.shared_sdk.validation.WorkDayValidationError
 import timhi.timetracker.shared_sdk.validation.WorkDayValidationException
 import timhi.timetracker.shared_sdk.weekLabel
 import kotlin.time.Duration
@@ -81,6 +82,16 @@ class WorkDayController(
 
     @PostMapping("/validate")
     fun validate(@RequestBody workDay: WorkDayDto): ValidationResponse {
+        val hasEmptyRange = workDay.timeRanges.any { range ->
+            range.start.isBlank() || range.end.isBlank()
+        }
+        if (hasEmptyRange) {
+            return ValidationResponse(
+                valid = false,
+                error = WorkDayValidationError.EMPTY_TIME_RANGE.name
+            )
+        }
+
         // Convert once so we validate the real domain model
         val domain = workDay.toWorkDay()
 

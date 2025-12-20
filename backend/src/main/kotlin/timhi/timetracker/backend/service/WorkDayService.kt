@@ -15,6 +15,7 @@ import timhi.timetracker.backend.persistance.toDomain
 import timhi.timetracker.backend.persistance.toEntity
 import timhi.timetracker.backend.repository.WorkDayRepository
 import timhi.timetracker.shared_sdk.model.WorkDay
+import timhi.timetracker.shared_sdk.validateWorkDay
 
 @Service
 class WorkDayService(
@@ -44,6 +45,7 @@ class WorkDayService(
 
     @Transactional
     fun upsert(workDay: WorkDay): WorkDay {
+        validateWorkDay(workDay)
         val entity = workDay.toEntity()
         return repository.save(entity).toDomain()
     }

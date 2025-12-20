@@ -47,9 +47,8 @@ export function useWorkDays(initialOffset: number = 0) {
         return await workdayService.getWeekLabel(weekOffset);
     }, []);
 
-    const validateWorkDay = useCallback(async (workDay: JsWorkDay): Promise<boolean> => {
-        const response = await workdayService.validateWorkDay(workDay);
-        return response.valid;
+    const validateWorkDay = useCallback(async (workDay: JsWorkDay): Promise<ValidationResponse> => {
+        return workdayService.validateWorkDay(workDay);
     }, []);
 
     const getWorkDayDuration = useCallback((id: string): Promise<JsWorkDayDurations | null> => {
@@ -74,4 +73,9 @@ export function useWorkDays(initialOffset: number = 0) {
         }),
         [getWorkDayDuration, validateWorkDay, listAll, loading, offset, setOffset, fetchWeek, upsert, remove, getByDate, getById, getWeekLabel]
     );
+}
+
+interface ValidationResponse {
+    valid: boolean;
+    error?: string;
 }
