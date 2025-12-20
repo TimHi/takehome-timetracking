@@ -47,11 +47,19 @@ function DayView() {
 
 	return (
 		<Box p={2}>
-			<Stack direction='row' alignItems='center' justifyContent='space-between' mb={1}>
+			<Stack
+				direction='row'
+				alignItems='center'
+				justifyContent='space-between'
+				mb={1}
+			>
 				<Typography variant='h5'>Workday</Typography>
 				{id ? (
 					<Tooltip title='Edit time ranges'>
-						<IconButton aria-label='edit workday' onClick={() => navigate(`/day/${id}/edit`)}>
+						<IconButton
+							aria-label='edit workday'
+							onClick={() => navigate(`/day/${id}/edit`)}
+						>
 							<EditIcon />
 						</IconButton>
 					</Tooltip>
@@ -74,7 +82,7 @@ function DayView() {
 					</Stack>
 				</>
 			) : (
-				<Typography>No data</Typography>
+				<Typography>Keine Daten</Typography>
 			)}
 		</Box>
 	);

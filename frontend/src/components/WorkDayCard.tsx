@@ -18,7 +18,7 @@ function WorkDayCard({ workDayId }: WorkDayCardProps) {
 		fetchWeekDay(workDayId);
 	}, [workDayId, fetchWeekDay]);
 
-	if (!workDay) return <div>No data</div>;
+	if (!workDay) return <></>;
 
 	return (
 		<Card>

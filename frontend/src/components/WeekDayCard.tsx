@@ -32,7 +32,7 @@ function WeekDayCard({ workDayId }: WeekDayCardProps) {
 		loadDurations();
 	}
 
-	if (!workDay) return <div>No data</div>;
+	if (!workDay) return <></>;
 
 	return (
 		<Card>

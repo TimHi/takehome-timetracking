@@ -303,7 +303,7 @@ function DayEditView({ id }: DayEditViewProps) {
 	if (!workDay) {
 		return (
 			<Box p={2}>
-				<Typography color='error'>{error ?? 'No data'}</Typography>
+				<Typography color='error'>{error ?? 'Keine Daten'}</Typography>
 			</Box>
 		);
 	}

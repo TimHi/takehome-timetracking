@@ -39,11 +39,11 @@ function WorkDayListView() {
 	return (
 		<Box p={2}>
 			<Typography variant='h5' gutterBottom>
-				Workdays
+				Arbeitstage
 			</Typography>
 
 			{loading ? (
-				<Typography>Loading...</Typography>
+				<Typography>Lädt...</Typography>
 			) : error ? (
 				<Typography color='error'>{error}</Typography>
 			) : workDays.length === 0 ? (
