@@ -21,7 +21,7 @@ function WeeklyView() {
 			) : workDays.length === 0 ? (
 				<Typography>Keine Arbeitstage erfasst</Typography>
 			) : (
-				<Box display='flex' flexWrap='wrap' gap={4}>
+				<Box display='flex' flexWrap='wrap' gap={2}>
 					{workDays.map((day) => (
 						<Box key={day.id}>
 							<WeekDayCard workDayId={day.id} />

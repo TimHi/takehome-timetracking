@@ -21,6 +21,15 @@ function WeekHeader({
 			alignItems='center'
 			justifyContent='space-between'
 			mb={2}
+			gap={2}
+			sx={{
+				padding: 2,
+				borderRadius: 18,
+				backgroundColor: 'rgba(255, 255, 255, 0.8)',
+				border: '1px solid rgba(15, 23, 42, 0.08)',
+				boxShadow: '0 16px 34px rgba(15, 23, 42, 0.08)',
+				backdropFilter: 'blur(12px)',
+			}}
 		>
 			<Button
 				variant='outlined'

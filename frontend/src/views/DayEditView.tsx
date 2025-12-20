@@ -382,7 +382,7 @@ function DayEditView({ id }: DayEditViewProps) {
 						onClick={handleCancel}
 						disabled={isNew ? saving : deleting}
 					>
-						Cancel
+						Abbrechen
 					</Button>
 					{isNew ? null : (
 						<Button
@@ -391,7 +391,7 @@ function DayEditView({ id }: DayEditViewProps) {
 							onClick={handleDelete}
 							disabled={saving || deleting}
 						>
-							{deleting ? 'Deleting...' : 'Delete'}
+							{deleting ? 'Löscht...' : 'Löschen'}
 						</Button>
 					)}
 					<Button
@@ -399,7 +399,7 @@ function DayEditView({ id }: DayEditViewProps) {
 						onClick={handleSave}
 						disabled={saving || deleting || validating || !isValid}
 					>
-						{saving ? 'Saving...' : 'Save'}
+						{saving ? 'Speichert...' : 'Speichern'}
 					</Button>
 				</Stack>
 			</Stack>
