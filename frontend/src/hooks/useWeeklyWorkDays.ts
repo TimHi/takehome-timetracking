@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { JsWorkDay } from 'shared';
 import { useWorkDays } from '../hooks/useWorkDays';
-//TODO_THL: Naming
+
 export function useWeeklyWorkDays(initialOffset = 0) {
     const server = useWorkDays();
 

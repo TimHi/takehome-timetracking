@@ -22,7 +22,6 @@ class ValidateJsWorkDayTest {
             )
         )
 
-        // Should not throw
         validate(jsWorkDay)
     }
 

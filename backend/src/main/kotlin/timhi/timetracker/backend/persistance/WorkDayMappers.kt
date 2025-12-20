@@ -39,7 +39,7 @@ fun TimeRange.toEmbeddable(): TimeRangeEmbeddable = TimeRangeEmbeddable(
 fun WorkDayUpsertRequest.toWorkDay(): WorkDay =
     WorkDay(
         id = id,
-        date = LocalDate.parse(date), // <-- conversion happens here, not in Jackson
+        date = LocalDate.parse(date), 
         timeRanges = timeRanges.map { it.toTimeRange() }
     )
 

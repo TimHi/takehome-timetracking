@@ -14,7 +14,7 @@ import timhi.timetracker.shared_sdk.model.WorkDay
 
 
 fun WorkDayDto.toWorkDay(): WorkDay = WorkDay(
-    id = this.id,  // can be null if new
+    id = this.id,
     date = LocalDate.parse(this.date),
     timeRanges = timeRanges.map { it.toTimeRange() }
 )
@@ -22,7 +22,7 @@ fun WorkDayDto.toWorkDay(): WorkDay = WorkDay(
 fun TimeRangeDto.toTimeRange(): TimeRange = TimeRange(
     start = Instant.parse(this.start),
     end = Instant.parse(this.end),
-    type = TimeRangeType.valueOf(this.type.uppercase()) // converts string to enum
+    type = TimeRangeType.valueOf(this.type.uppercase())
 )
 
 /* =========================
@@ -38,5 +38,5 @@ fun WorkDay.toDto(): WorkDayDto = WorkDayDto(
 fun TimeRange.toDto(): TimeRangeDto = TimeRangeDto(
     start = this.start.toString(),
     end = this.end.toString(),
-    type = this.type.name // returns "WORK" or "BREAK"
+    type = this.type.name
 )
