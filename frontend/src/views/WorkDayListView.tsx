@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Box, Card, CardActionArea, CardContent, Stack, Typography } from '@mui/material';
+import {
+	Box,
+	Card,
+	CardActionArea,
+	CardContent,
+	Stack,
+	Typography,
+} from '@mui/material';
 import { Link } from 'react-router-dom';
 import type { JsWorkDay } from 'shared';
 import { useWorkDays } from '../hooks/useWorkDays';
@@ -49,7 +56,7 @@ function WorkDayListView() {
 								<CardContent>
 									<Typography variant='h6'>{formatDate(day.date)}</Typography>
 									<Typography color='text.secondary'>
-										{day.timeRanges.length} Eintraege
+										{day.timeRanges.length} Einträge
 									</Typography>
 								</CardContent>
 							</CardActionArea>

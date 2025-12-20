@@ -2,6 +2,13 @@ import type { JsWorkDay, JsWorkDayDurations } from "shared";
 
 const BASE_URL = "http://localhost:8080/api/workdays";
 
+const toKotlinxLocalDate = (isoDate: string) => {
+    const [datePart] = isoDate.split("T");
+    const [year, month, day] = datePart.split("-").map(Number);
+    if (!year || !month || !day) return isoDate;
+    return { year, monthNumber: month, dayOfMonth: day };
+};
+
 export const workdayService = {
     listAll: async (): Promise<JsWorkDay[]> => {
         const res = await fetch(`${BASE_URL}`);
@@ -27,10 +34,11 @@ export const workdayService = {
 
     // --- New CRUD methods ---
     upsert: async (workDay: JsWorkDay): Promise<JsWorkDay> => {
+        const payload = { ...workDay, date: toKotlinxLocalDate(workDay.date) };
         const res = await fetch(`${BASE_URL}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(workDay),
+            body: JSON.stringify(payload),
         });
         return res.json();
     },
