@@ -26,7 +26,7 @@ function WorkDayListView() {
 				if (active) setWorkDays(days);
 			} catch (err) {
 				console.error(err);
-				if (active) setError('Failed to load workdays.');
+				if (active) setError('Arbeitstage konnten nicht geladen werden.');
 			}
 		};
 

@@ -45,10 +45,10 @@ export const useWorkDayEditor = (id?: string) => {
 				const result = await getById(id);
 				if (!active) return;
 				setWorkDay(result);
-				if (!result) setError('Workday not found.');
+				if (!result) setError('Arbeitstag nicht gefunden.');
 			} catch (err) {
 				console.error(err);
-				if (active) setError('Failed to load workday.');
+				if (active) setError('Arbeitstag konnte nicht geladen werden.');
 			} finally {
 				if (active) setLoading(false);
 			}
@@ -79,7 +79,7 @@ export const useWorkDayEditor = (id?: string) => {
 				console.error(err);
 				if (active) {
 					setIsValid(false);
-					setValidationError('Validation request failed');
+					setValidationError('Validierungsanfrage fehlgeschlagen.');
 				}
 			})
 			.finally(() => {
@@ -100,7 +100,7 @@ export const useWorkDayEditor = (id?: string) => {
 			return await upsert(workDay);
 		} catch (err) {
 			console.error(err);
-			setError('Failed to save workday.');
+			setError('Arbeitstag konnte nicht gespeichert werden.');
 			return null;
 		} finally {
 			setSaving(false);
@@ -111,7 +111,7 @@ export const useWorkDayEditor = (id?: string) => {
 		async (workDayId: string) => {
 			const numericId = Number(workDayId);
 			if (!Number.isFinite(numericId)) {
-				setError('Invalid workday id.');
+				setError('Ungueltige Arbeitstag-ID.');
 				return false;
 			}
 
@@ -122,7 +122,7 @@ export const useWorkDayEditor = (id?: string) => {
 				return true;
 			} catch (err) {
 				console.error(err);
-				setError('Failed to delete workday.');
+				setError('Arbeitstag konnte nicht geloescht werden.');
 				return false;
 			} finally {
 				setDeleting(false);

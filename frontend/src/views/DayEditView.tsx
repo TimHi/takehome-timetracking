@@ -115,7 +115,7 @@ function DayEditView({ id }: DayEditViewProps) {
 	const handleSave = async () => {
 		if (!workDay) return;
 		if (!isValid) {
-			setError('Please fix validation errors before saving.');
+			setError('Bitte Validierungsfehler vor dem Speichern beheben.');
 			return;
 		}
 
@@ -173,7 +173,7 @@ function DayEditView({ id }: DayEditViewProps) {
 		<Box p={2}>
 			<Stack spacing={2}>
 				<Typography variant='h5'>
-					{isNew ? 'Arbeitstag erfassen' : 'Edit workday'}
+					{isNew ? 'Arbeitstag erfassen' : 'Arbeitstag bearbeiten'}
 				</Typography>
 				{isNew ? (
 					<TextField
@@ -221,11 +221,11 @@ function DayEditView({ id }: DayEditViewProps) {
 								onEndChange={handleTimeChange(index, 'end')}
 							/>
 							<Button
-								variant='text'
+								variant='outlined'
 								color='error'
 								onClick={() => handleRemoveRange(index)}
 							>
-								Delete
+								Löschen
 							</Button>
 						</Stack>
 					))}

@@ -20,7 +20,7 @@ function DayView() {
 
 		const load = async () => {
 			if (!id) {
-				setError('No day id provided.');
+				setError('Keine Tages-ID angegeben.');
 				return;
 			}
 
@@ -30,10 +30,10 @@ function DayView() {
 				const result = await getById(id);
 				if (!active) return;
 				setWorkDay(result);
-				if (!result) setError('Workday not found.');
+				if (!result) setError('Arbeitstag nicht gefunden.');
 			} catch (err) {
 				console.error(err);
-				if (active) setError('Failed to load workday.');
+				if (active) setError('Arbeitstag konnte nicht geladen werden.');
 			} finally {
 				if (active) setLoading(false);
 			}
@@ -53,11 +53,11 @@ function DayView() {
 				justifyContent='space-between'
 				mb={1}
 			>
-				<Typography variant='h5'>Workday</Typography>
+				<Typography variant='h5'>Arbeitstag</Typography>
 				{id ? (
-					<Tooltip title='Edit time ranges'>
+					<Tooltip title='Zeiten bearbeiten'>
 						<IconButton
-							aria-label='edit workday'
+							aria-label='Arbeitstag bearbeiten'
 							onClick={() => navigate(`/day/${id}/edit`)}
 						>
 							<EditIcon />
